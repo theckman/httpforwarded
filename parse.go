@@ -61,6 +61,47 @@ func Parse(values []string) (map[string][]string, error) {
 	return params, nil
 }
 
+// ParseParameter parses the Forwarded header values and returns a slice of
+// parameter values. The paramName parameter should be a lowercase string.
+func ParseParameter(paramName string, values []string) ([]string, error) {
+	paramValues := make([]string, 0, 2)
+
+	for _, v := range values {
+		for len(v) > 0 {
+			// trim any leading whitespace
+			v = strings.TrimLeftFunc(v, unicode.IsSpace)
+
+			if len(v) == 0 {
+				break
+			}
+
+			// consume a key-value pair from the value
+			key, value, rest := consumeForwardedParam(v)
+
+			if key == "" {
+				if strings.TrimSpace(rest) == ";" {
+					// Ignore trailing semicolons.
+					// Not an error.
+					return paramValues, nil
+				}
+				// Parse error.
+				return nil, errors.New("forwarded: invalid parameter")
+			}
+
+			v = rest
+
+			// if this isn't the key we are looking for, move on
+			if key != paramName {
+				continue
+			}
+
+			paramValues = append(paramValues, value)
+		}
+	}
+
+	return paramValues, nil
+}
+
 func consumeForwardedParam(v string) (param, value, rest string) {
 	// trim any preliminary whitespace
 	rest = strings.TrimLeftFunc(v, unicode.IsSpace)
