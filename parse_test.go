@@ -137,3 +137,77 @@ func testParseAllTheThings(c *C) {
 	c.Check(by[0], Equals, "192.0.2.200")
 	c.Check(by[1], Equals, "192.0.2.202")
 }
+
+func (*TestSuite) TestParseParameter(c *C) {
+	testParseParameterSingleParam(c)
+	testParseParameterMultiParam(c)
+	testParseParameterMultiLine(c)
+	testParseParameterAllTheThings(c)
+}
+
+func testParseParameterSingleParam(c *C) {
+	var err error
+	var vals []string
+
+	values := []string{"for=192.0.2.1"}
+
+	vals, err = httpforwarded.ParseParameter("for", values)
+	c.Assert(err, IsNil)
+	c.Check(len(vals), Equals, 1)
+	c.Check(vals[0], Equals, "192.0.2.1")
+}
+
+func testParseParameterMultiParam(c *C) {
+	var err error
+	var vals []string
+
+	values := []string{"for=192.0.2.1, for=192.0.2.4; proto=http"}
+
+	vals, err = httpforwarded.ParseParameter("for", values)
+	c.Assert(err, IsNil)
+	c.Check(len(vals), Equals, 2)
+	c.Check(vals[0], Equals, "192.0.2.1")
+	c.Check(vals[1], Equals, "192.0.2.4")
+
+	vals, err = httpforwarded.ParseParameter("proto", values)
+	c.Assert(err, IsNil)
+	c.Check(len(vals), Equals, 1)
+	c.Check(vals[0], Equals, "http")
+}
+
+func testParseParameterMultiLine(c *C) {
+	var err error
+	var vals []string
+
+	values := []string{"for=192.0.2.1", "for=192.0.2.4"}
+
+	vals, err = httpforwarded.ParseParameter("for", values)
+	c.Assert(err, IsNil)
+	c.Check(len(vals), Equals, 2)
+	c.Check(vals[0], Equals, "192.0.2.1")
+	c.Check(vals[1], Equals, "192.0.2.4")
+}
+
+func testParseParameterAllTheThings(c *C) {
+	var err error
+	var vals []string
+
+	values := []string{
+		"for=192.0.2.1; proto=http",
+		"by=192.0.2.200",
+		"for=192.0.2.4, for=192.0.2.10; by=192.0.2.202",
+	}
+
+	vals, err = httpforwarded.ParseParameter("for", values)
+	c.Assert(err, IsNil)
+	c.Check(len(vals), Equals, 3)
+	c.Check(vals[0], Equals, "192.0.2.1")
+	c.Check(vals[1], Equals, "192.0.2.4")
+	c.Check(vals[2], Equals, "192.0.2.10")
+
+	vals, err = httpforwarded.ParseParameter("by", values)
+	c.Assert(err, IsNil)
+	c.Check(len(vals), Equals, 2)
+	c.Check(vals[0], Equals, "192.0.2.200")
+	c.Check(vals[1], Equals, "192.0.2.202")
+}
