@@ -1,3 +1,7 @@
+// Copyright 2016 Tim Heckman. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 // Package httpforwarded is a helper package for parsing the Forwarded HTTP
 // header as defined in RFC-7239 [1]. There is a function for parsing the value
 // of multiple Forwarded headers, and a function for formatting a Forwarded
