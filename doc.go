@@ -14,7 +14,7 @@
 // Here is an example of parsing the Forwarded header:
 //
 // 		// var req *http.Request
-//		vals := req.Header["Forwarded"] // get all Forwarded fields
+//		vals := req.Header[http.CanonicalHeaderKey("forwarded")] // get all Forwarded fields
 //		params, _ := httpforwarded.Parse(vals)
 //
 // [1] https://tools.ietf.org/html/rfc7239
