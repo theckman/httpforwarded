@@ -17,7 +17,11 @@ var bytesBufferPool = &sync.Pool{
 
 // Format is a function that takes a map[string][]string and generates the
 // appropriate content for an HTTP Forwarded header.
-func Format(params map[string][]string) (string, error) {
+func Format(params map[string][]string) string {
+	if len(params) == 0 {
+		return ""
+	}
+
 	buf := bytesBufferPool.Get().(*bytes.Buffer)
 	buf.Reset()
 
@@ -57,7 +61,7 @@ func Format(params map[string][]string) (string, error) {
 
 	bytesBufferPool.Put(buf)
 
-	return out, nil
+	return out
 }
 
 func sortedParamKeys(params map[string][]string) []string {

@@ -30,7 +30,7 @@ func ExampleFormat() {
 	}
 
 	// format the parameter map
-	val, _ := httpforwarded.Format(params)
+	val := httpforwarded.Format(params)
 
 	fmt.Print(val)
 	// output: for=192.0.2.1, for=192.0.2.4; proto=http

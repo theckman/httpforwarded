@@ -11,7 +11,9 @@ import (
 
 func (*TestSuite) TestFormat(c *C) {
 	var out string
-	var err error
+
+	out = httpforwarded.Format(nil)
+	c.Check(out, Equals, "")
 
 	params := map[string][]string{
 		"for":   []string{"192.0.2.1", "192.0.2.4"},
@@ -19,7 +21,6 @@ func (*TestSuite) TestFormat(c *C) {
 		"proto": []string{"http"},
 	}
 
-	out, err = httpforwarded.Format(params)
-	c.Assert(err, IsNil)
+	out = httpforwarded.Format(params)
 	c.Check(out, Equals, "by=192.0.2.200, by=192.0.2.202; for=192.0.2.1, for=192.0.2.4; proto=http")
 }
