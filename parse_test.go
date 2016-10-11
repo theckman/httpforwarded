@@ -5,16 +5,32 @@
 package httpforwarded_test
 
 import (
-	"github.com/theckman/go-httpforwarded"
+	"github.com/theckman/httpforwarded"
 	. "gopkg.in/check.v1"
 )
 
 func (*TestSuite) TestParse(c *C) {
+	testParseMisc(c)
 	testParseSingleParam(c)
 	testParseMultiParam(c)
 	testParseMultiLine(c)
 	testParseMultiParamValue(c)
 	testParseAllTheThings(c)
+}
+
+func testParseMisc(c *C) {
+	var err error
+	var vals map[string][]string
+
+	vals, err = httpforwarded.Parse(nil)
+	c.Check(err, IsNil)
+	c.Check(vals, IsNil)
+
+	var values []string
+
+	vals, err = httpforwarded.Parse(values)
+	c.Check(err, IsNil)
+	c.Check(vals, IsNil)
 }
 
 func testParseSingleParam(c *C) {
@@ -139,10 +155,32 @@ func testParseAllTheThings(c *C) {
 }
 
 func (*TestSuite) TestParseParameter(c *C) {
+	testParseParameterMisc(c)
 	testParseParameterSingleParam(c)
 	testParseParameterMultiParam(c)
 	testParseParameterMultiLine(c)
 	testParseParameterAllTheThings(c)
+}
+
+func testParseParameterMisc(c *C) {
+	var err error
+	var vals []string
+
+	vals, err = httpforwarded.ParseParameter("for", nil)
+	c.Check(err, IsNil)
+	c.Check(vals, IsNil)
+
+	var values []string
+
+	vals, err = httpforwarded.ParseParameter("for", values)
+	c.Check(err, IsNil)
+	c.Check(vals, IsNil)
+
+	values = []string{"for=192.0.2.1"}
+
+	vals, err = httpforwarded.ParseParameter("", values)
+	c.Check(err, ErrorMatches, `paramName must not be ""`)
+	c.Check(vals, IsNil)
 }
 
 func testParseParameterSingleParam(c *C) {

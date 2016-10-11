@@ -7,7 +7,7 @@ package httpforwarded_test
 import (
 	"fmt"
 
-	"github.com/theckman/go-httpforwarded"
+	"github.com/theckman/httpforwarded"
 )
 
 func ExampleParse() {
