@@ -5,7 +5,7 @@
 package httpforwarded_test
 
 import (
-	httpforwarded "github.com/theckman/go-httpforwarded"
+	"github.com/theckman/httpforwarded"
 	. "gopkg.in/check.v1"
 )
 

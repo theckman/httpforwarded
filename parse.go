@@ -21,6 +21,10 @@ import (
 // This function was inspired by the mime.ParseMediaType() function in the
 // Go stdlib.
 func Parse(values []string) (map[string][]string, error) {
+	if len(values) == 0 {
+		return nil, nil
+	}
+
 	params := make(map[string][]string)
 
 	for _, v := range values {
@@ -64,6 +68,14 @@ func Parse(values []string) (map[string][]string, error) {
 // ParseParameter parses the Forwarded header values and returns a slice of
 // parameter values. The paramName parameter should be a lowercase string.
 func ParseParameter(paramName string, values []string) ([]string, error) {
+	if paramName == "" {
+		return nil, errors.New(`paramName must not be ""`)
+	}
+
+	if len(values) == 0 {
+		return nil, nil
+	}
+
 	paramValues := make([]string, 0, 2)
 
 	for _, v := range values {
