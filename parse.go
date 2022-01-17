@@ -8,6 +8,7 @@ package httpforwarded
 import (
 	"bytes"
 	"errors"
+	"net/http"
 	"strings"
 	"unicode"
 )
@@ -63,6 +64,14 @@ func Parse(values []string) (map[string][]string, error) {
 	}
 
 	return params, nil
+}
+
+// ParseFromRequest is a helper function that is identical to Parse, except that
+// it automatically extracts the "Forwarded" header values from the *http.Request.
+func ParseFromRequest(req *http.Request) (map[string][]string, error) {
+	headerValues := req.Header[http.CanonicalHeaderKey("forwarded")]
+
+	return Parse(headerValues)
 }
 
 // ParseParameter parses the Forwarded header values and returns a slice of
