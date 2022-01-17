@@ -7,6 +7,7 @@ package httpforwarded_test
 import (
 	"github.com/theckman/httpforwarded"
 	. "gopkg.in/check.v1"
+	"net/http"
 )
 
 func (*TestSuite) TestParse(c *C) {
@@ -16,6 +17,7 @@ func (*TestSuite) TestParse(c *C) {
 	testParseMultiLine(c)
 	testParseMultiParamValue(c)
 	testParseAllTheThings(c)
+	testParseFromRequest(c)
 }
 
 func testParseMisc(c *C) {
@@ -152,6 +154,24 @@ func testParseAllTheThings(c *C) {
 	c.Assert(len(by), Equals, 2)
 	c.Check(by[0], Equals, "192.0.2.200")
 	c.Check(by[1], Equals, "192.0.2.202")
+}
+
+func testParseFromRequest(c *C) {
+	var err error
+	var params map[string][]string
+
+	req := &http.Request{Header: map[string][]string{
+		"Forwarded": {"for=192.0.2.1"},
+	}}
+
+	params, err = httpforwarded.ParseFromRequest(req)
+	c.Assert(err, IsNil)
+	c.Check(len(params), Equals, 1)
+
+	forVal, ok := params["for"]
+	c.Assert(ok, Equals, true)
+	c.Assert(len(forVal), Equals, 1)
+	c.Check(forVal[0], Equals, "192.0.2.1")
 }
 
 func (*TestSuite) TestParseParameter(c *C) {
